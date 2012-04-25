@@ -1,0 +1,46 @@
+DPLSim
+======
+
+Pipeline for GWAS simulation and formatting for multiple analysis methods
+
+Full Disease Gene Mapping Pipeline
+
+1. Simupop simulation using human genome as starting point.
+  a. initial population from Hapmap data
+		loadHapMap3.py
+		selectMarkers.py
+		-select hapmap populations
+		-select chromosomes (by name)
+		-select markers (number of markers + start, range, list of SNPs)
+	b. expand population under selection
+		-names of markers under selection
+		-selection regime
+	c. generate case/control datasets using a penetrance model
+		-penetrance.py
+		single gene
+			alleles additive or multiplicative?
+		multiple Gene
+			genes and alleles additive/multiplicative?
+		wild type risk?
+		relative risk?
+		number of cases
+		number of controls
+	d. remove monomorphic markers (and DPL?) from datasets
+		remove_rare_snps.py
+		remove_DPL.py
+		
+2. Generation of input datafiles for various disease mapping programs.
+	a. simupop_formatr.py
+		- names of programs
+	b. marg_split.py (makes sliding windows)
+	
+3. Generation of script files for running programs on SGE cluster.
+	a. program-specific options (number of ARGs, number of permutations, etc)
+	b. SGE options (memory, number of machines)
+	c. is it to be run as an "array"?
+		program-specific array intstructions
+
+4. Generation of script files for collecting results.
+	a. based on the programs run: need to stitch windows back together?
+	
+5. Generation of pipeline-run INSTRUCTIONS.
