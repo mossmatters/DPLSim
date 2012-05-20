@@ -4,72 +4,79 @@ Generate a bash script for running Margarita from the command line with various 
 The options are stored as a simuPOP.simuOpt option class, and uses its verification system.
 
 """
-import sys
+import sys,os
 import simuOpt
 from types import *
 
 options = [
-	{'name': 'inputfiles',
-     'default': 'Margarita_rep_1.pop',
-     'label': 'Name of input file in Margarita format.',
-     'type': 'filenames',
-     'description': 'Text file in Margarita format.'
+	{'name': 'haplofile',
+     'default': 'Beta_haplotypes_2_rep_1.txt',
+     'label': 'Phased Haplotype File.',
+     'type': 'filename',
+     'description': 'Text file in Beta format.'
     },
-    {'name': 'memory',
-     'default': 1024,
-     'label': 'How many MB of RAM?',
-     'description': '''Sets the -Xmx parameter in java for Margarita''',
-     'type': 'integer'
+    {'name': 'posfile',
+     'default': 'Beta_positions_2_rep_1.txt',
+     'label': 'Positions File',
+     'description': '''List of integers representing marker locations''',
+     'type': 'filename'
     },
-	{'name': 'permutations',
-     'default': 1000,
-     'label': 'Number of Permutations',
-     'type': 'integer',
-     'description': 'Permutation tests in Margarita'
+	{'name': 'statusfile',
+     'default': 'Beta_status_2_rep_1.txt',
+     'label': 'Disease Status File',
+     'type': 'filename',
+     'description': 'List of 0 and 1 for disease status in same order as haplofile.'
     },
-    {'name': 'numArgs',
-     'default': 30,
-     'label': 'Number of ARGs to infer.',
-     'type': 'integer',
-     'description': 'How many Ancestral Recombination Graphs to infer in Margarita'
+    {'name': 'resultsfilename',
+     'default': 'Beta_2_rep_1.scores',
+     'label': 'Name of Results File.',
+     'type': 'string',
+     'description': 'Results file contains only the raw Bayes factor for each marker.'
     },
-    {'name': 'smartPerm',
-    'default':True,
-    'label': "Perform Smart Permutations?",
-    'type': BooleanType
+    {'name': 'logfile',
+    'default':'Beta_2_rep_1.log',
+    'label': "Log file with all output from BETA",
+    'type': 'string'
     },
-    {'name': 'numSmart',
-     'default': 100,
-     'label': 'Give up after how many permutations?',
-     'type': 'integer',
-     'description': 'Smart Permutations will give up if the first N permutations exceed observed.'
+    {'name': 'rootpath',
+     'default': "~/Desktop/Python/DPLSim_develop/",
+     'label': 'Directory for temporary files.',
+     'description': 'BETA creates many temporary files with genetree.'
     },
     {'name': 'bashname',
-    'default': 'rep1.bash',
+    'default': 'rep_1.bash',
     'type':'string',
     'label': "Name for the bash script.",
-	'description': "Name of a file to save the bash script to run Margarita."
+	'description': "Name of a file to save the bash script to run BETA."
     },
     {'name':"betaLoc",
-    'default':'~/bin/margarita.jar',
+    'default':'~/bin/BETA_RUN.r',
     'type':'filename',
     'label': 'Path to BETA_RUN.r'
+    },
+    {'name':"cleanup",
+    'default':True,
+    'type':BooleanType,
+    "description":"""If true, will delete the input files and most of the outputfiles upon completion. Saves only the Bayes factors."""
     }
 	]
 	
 def clineWriter(pars):
 	bashfile = open(pars.bashname,'w')
 	bashfile.write("#/bin/bash\n")
-	if pars.smartPerm:
-		bashfile.write("java -Xmx%d -jar %s %s %d %d --smart %d" % (pars.memory,pars.margaritaLoc,pars.inputfile,pars.numArgs,pars.permutations,pars.numSmart))
-		bashfile.close()
-		return
-	else:
-		bashfile.write("java -Xmx%d -jar %s %s %d %d" % (pars.memory,pars.margaritaLoc,pars.inputfile,pars.numArgs,pars.permutations))
-		bashfile.close()
-		return
 
-short_desc = "This script sets up a command line for TreeDT"
+	bashfile.write("Rscript %s %s %s %s %s %s >%s\n" %(pars.betaLoc,pars.haplofile,pars.posfile,pars.statusfile,pars.resultsfilename,pars.rootpath,pars.logfile))
+
+	if pars.cleanup:
+		bashfile.write("rm %s\n" %pars.haplofile)
+		bashfile.write("rm %s\n" %pars.posfile)
+		bashfile.write("rm %s\n" %pars.statusfile)
+	
+	bashfile.close()	
+	os.chmod(pars.bashname,0755)
+	return
+	
+short_desc = "This script sets up a command line bash script for BETA"
 	
 if __name__ == '__main__':
 	import logging

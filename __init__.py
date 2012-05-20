@@ -77,7 +77,6 @@ class AnalysisMethod(object):
 		Uses the dynamic import function to return the formatter as a variable. 
 		"""
 		if self.format:
-			print "importing formatter!"
 			return my_import("DPLSim.analysisMethods.%s.formatter"%self.name.lower())
 		else:
 			print "not importing formatter!"

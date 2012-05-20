@@ -4,7 +4,7 @@ Generate a bash script for running Margarita from the command line with various 
 The options are stored as a simuPOP.simuOpt option class, and uses its verification system.
 
 """
-import sys
+import sys,os
 import simuOpt
 from types import *
 
@@ -45,7 +45,7 @@ options = [
      'description': 'Smart Permutations will give up if the first N permutations exceed observed.'
     },
     {'name': 'bashname',
-    'default': 'rep1.bash',
+    'default': 'rep_1.bash',
     'type':'string',
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run Margarita."
@@ -54,6 +54,11 @@ options = [
     'default':'~/bin/margarita.jar',
     'type':'filename',
     'label': 'Path to margarita.jar'
+    },
+    {'name':"cleanup",
+    'default':True,
+    'type':BooleanType,
+    "description":"""If true, will delete the input file and most of the outputfile upon completion. Saves only the ARG scores."""
     }
 	]
 	
@@ -61,15 +66,18 @@ def clineWriter(pars):
 	bashfile = open(pars.bashname,'w')
 	bashfile.write("#/bin/bash\n")
 	if pars.smartPerm:
-		bashfile.write("java -Xmx%d -jar %s %s %d %d --smart %d" % (pars.memory,pars.margaritaLoc,pars.inputfile,pars.numArgs,pars.permutations,pars.numSmart))
-		bashfile.close()
-		return
+		bashfile.write("java -Xmx%d -jar %s %s %d %d --smart %d\n" % (pars.memory,pars.margaritaLoc,pars.inputfile,pars.numArgs,pars.permutations,pars.numSmart))
 	else:
-		bashfile.write("java -Xmx%d -jar %s %s %d %d" % (pars.memory,pars.margaritaLoc,pars.inputfile,pars.numArgs,pars.permutations))
-		bashfile.close()
-		return
-
-short_desc = "This script sets up a command line for TreeDT"
+		bashfile.write("java -Xmx%d -jar %s %s %d %d\n" % (pars.memory,pars.margaritaLoc,pars.inputfile,pars.numArgs,pars.permutations))
+	
+	if pars.cleanup:
+		 bashfile.write("rm %s\n" % pars.inputfile)
+	
+	bashfile.close()
+	os.chmod(pars.bashname,0755)
+	return
+	
+short_desc = "This script sets up a command line bash script for Margarita"
 	
 if __name__ == '__main__':
 	import logging

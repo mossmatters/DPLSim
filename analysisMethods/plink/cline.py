@@ -13,7 +13,7 @@ options = [
      'default': 'rep_1',
      'label': 'Input file stem for .ped and .map files.',
      'type': 'string',
-     'description': 'The base name of the two files required by PLINK: a pedigree file (.ped) and a map file (.map).'
+     'description': 'The base name of the two files required by PLINK: a pedigree file (.ped) and a map file (.map).',
      'validate': simuOpt.valueNotEqual('')
     },
     {'name': 'outfilestem',
@@ -36,10 +36,10 @@ options = [
      'description': 'Use --noweb flag in PLINK, suppressing the update check.'
     },
     {'name': 'bashname',
-    'default': 'rep1.bash',
+    'default': 'rep_1.bash',
     'type':'string',
     'label': "Name for the bash script.",
-	'description': "Name of a file to save the bash script to run PLINK."
+	'description': "Name of a file to save the bash script to run PLINK.",
 	'validate': simuOpt.valueNotEqual('')
     }
 	]
