@@ -4,3 +4,5 @@ class ProgramInfo(DPLSim.AnalysisMethod):
 		self.name="TREEDT"
 		self.format=True
 		self.formatter = self.getFormatter()
+		self.cline=True
+		self.clineWriter = self.getClineFunction()

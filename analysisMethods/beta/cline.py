@@ -44,7 +44,7 @@ options = [
      'description': 'BETA creates many temporary files with genetree.'
     },
     {'name': 'bashname',
-    'default': 'rep_1.bash',
+    'default': 'rep_1_beta.bash',
     'type':'string',
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run BETA."

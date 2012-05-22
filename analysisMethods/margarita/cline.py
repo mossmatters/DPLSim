@@ -45,7 +45,7 @@ options = [
      'description': 'Smart Permutations will give up if the first N permutations exceed observed.'
     },
     {'name': 'bashname',
-    'default': 'rep_1.bash',
+    'default': 'rep_1_margarita.bash',
     'type':'string',
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run Margarita."

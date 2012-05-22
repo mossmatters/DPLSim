@@ -45,6 +45,9 @@ DPLSim: A Full Disease Gene Mapping Pipeline
 import DPLSim
 from DPLSim.analysisMethods import my_import
 
+__all__ = ['analysisMethods','format','replicator','loadHapMap3','simuGWAS','selectMarkers','singleGeneModel']
+
+
 class AnalysisMethod(object):
 	"""
 	Initialize the AnalysisMethod class, with functions used by each analysis method.

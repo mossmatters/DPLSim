@@ -43,7 +43,7 @@ options = [
     'label': "Number of Fixed Subtrees (for k and K only)",
     'type': 'int'        },
     {'name': 'bashname',
-    'default': 'rep_1.bash',
+    'default': 'rep_1_treedt.bash',
     'type':'string',
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run PLINK."

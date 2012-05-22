@@ -5,3 +5,5 @@ class ProgramInfo(DPLSim.AnalysisMethod):
 		self.name="BETA"
 		self.format = True
 		self.formatter = self.getFormatter()
+		self.cline=True		
+		self.clineWriter = self.getClineFunction()

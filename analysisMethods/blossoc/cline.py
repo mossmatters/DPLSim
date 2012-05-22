@@ -60,7 +60,7 @@ options = [
     "description":"""If true, will delete the input files upon completion. Saves only the scores."""
     },
     {'name': 'bashname',
-    'default': 'rep_1.bash',
+    'default': 'rep_1_blossoc.bash',
     'type':'string',
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run Blossoc."

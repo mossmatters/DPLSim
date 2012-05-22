@@ -21,6 +21,8 @@
 #     required).
 #
 # Change Log:
+#	  2012-05-20 Matt Johnson <mgj4@duke.edu>
+#		Modify to use in DPLSim
 #     2010-03-01 Bo Peng <bpeng@mdanderson.org>
 #         Add script.
 
@@ -70,7 +72,7 @@ options = [
     },
     {'longarg': 'filename=',
      'label': 'File to save expanded population',
-     'default': 'expanded.pop',
+     'default': 'MAF_0.05_1.pop',
      'useDefault': True,
      'description': '''File to save the expanded population.''',
      'allowedTypes': [types.StringType],
@@ -133,8 +135,7 @@ options = [
                 size of the initial population will be used. Otherwise, the first
                 generation will have specified number of individuals. This is to avoid
                 losing genetic information if the initial population is very small.''',
-     'allowedTypes': [types.IntType, types.LongType],
-     'validate': simuOpt.valueGE(100)
+     'allowedTypes': [types.IntType, types.LongType]
     },
     {'longarg': 'expandSize=',
      'default': 50000,
@@ -162,7 +163,7 @@ options = [
     },
     {'separator': 'Disease information'},
     {'longarg': 'DPL=',
-     'default': [],
+     'default': ["rs4491689"],
      'useDefault': True,
      'label': 'Names of disease predisposing loci',
      'description': '''A list of names of disease predisposing loci. These loci
@@ -192,7 +193,7 @@ options = [
                 expandGen) so the exiting alleles are cleared and will be introduced later.''',
     },
     {'longarg': 'fitness=',
-     'default': [1, 1, 1],
+     'default': [1, 0.996, 0.994],
      'useDefault': True,
      'label': 'Fitness of genotype AA,Aa,aa',
      'allowedTypes': [types.ListType, types.TupleType],
@@ -225,6 +226,15 @@ options = [
      'allowedTypes': [types.StringType],
      'chooseOneOf': [ 'additive', 'multiplicative', 'interaction', 'none']
     },
+    {'name':"run_mode",
+    'default':"Now",
+    'type': ('chooseOneOf', ['Now', 'Bash Script']),
+    'label':"Choose Run Mode"
+    },
+    {'name':"expandPop",
+    'default':None,
+    'description':"""Placeholder for simuPOP population object."""
+    }
 ]
 
 

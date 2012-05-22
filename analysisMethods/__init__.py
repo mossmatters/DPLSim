@@ -10,7 +10,6 @@ def getAnalysisMethods():
 	"""Return a list of analysis methods that can be loaded."""
 	return ["DPLSim.analysisMethods.%s"%(x) for x in os.listdir(am_path) if os.path.isdir(os.path.join(am_path,x)) and os.path.isfile(os.path.join(am_path,x,"formatter.py"))] 
 	 
-
 def getModuleList(methodNames):
 	"""Given a list of analysis method names, return a list of loaded modules."""
 	modList = [my_import(modName) for modName in methodNames]

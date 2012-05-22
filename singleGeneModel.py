@@ -15,11 +15,57 @@ The user will need to specify:
 4) The number of cases and controls. 
 """
 
-import simuOpt, random, math
-simuOpt.setOptions(gui=False, alleleType='binary', optimized=True)
+import simuOpt, random, math,sys
+simuOpt.setOptions(quiet=True, alleleType='binary', optimized=True)
 from simuPOP import *
 
 import config
+
+options = [
+	{'name':'DPL',
+	'default':["rs4491689"],
+	'type':'strings',
+	'label':"Disease Locus ID"
+	},
+	{'name':'GRR',
+	'default':1.0,
+	'type':'number',
+	'label':"Genotype Relative Risk",
+	'validate':simuOpt.valueGE(1.0)
+	},
+	{'name':'wtr',
+	'default':0.05,
+	'type':'number',
+	'label':'Wild Type Risk',
+	'validate':simuOpt.valueBetween(0,1)
+	},
+	{'name':'numCases',
+	'default':1000,
+	'type':int,
+	'label':"Number of Cases"
+	},
+	{'name':'numControls',
+	'default':1000,
+	'type':int,
+	'label':"Number of Controls"
+	},
+	{'name':'expandPop',
+	'default':'MAF_0.05_2.pop',
+	'type':'filename',
+	'label':'Expanded Population to Sample',
+	'validate':simuOpt.valueValidFile()
+	},
+	{'name':'sampledPop',
+	'default':'rep_1.pop',
+	'type':str,
+	'label':"Name of sampled population file"
+	},
+	{'name':'pop',
+	'default':'',
+	'description':'simuPOP population object from expandPop'
+	}
+	]
+
 
 def _selectInds(off, param):
 	'Deterimine if the offspring can be kept'
@@ -45,26 +91,24 @@ def _selectInds(off, param):
 
 
 
-def penetrance(pop,DPL=["rs4491689"],GRR=1.0,wtr=0.05,numCases=1000,numControls=1000):
+def penetrance(pars,logger=None):
 	"""
 	Given a simuPOP population, the relative risk (additive), the wild-type risk, and the number and cases and controls, build a case-control dataset in simuPOP format.
 	DPL must be a list, even if there is only one locus.
 	"""
-	
-	print config.SELECTED_CASE
 	#DPL=["rs4491689", "rs2619939"]
-	reppop = pop.clone()
-	loci = reppop.lociByNames(DPL)
+	reppop = pars.pop.clone()
+	loci = reppop.lociByNames(pars.DPL)
 	#Set risks
-	het_risk = wtr*GRR
-	if GRR > 1:
-		hom_mut_risk = wtr*GRR*2
+	het_risk = pars.wtr*pars.GRR
+	if pars.GRR > 1:
+		hom_mut_risk = pars.wtr*pars.GRR*2
 	else:
-		hom_mut_risk = wtr
+		hom_mut_risk = pars.wtr
 	
-	config.risks = [wtr,het_risk,hom_mut_risk]
-	config.numCases = numCases
-	config.numControls = numControls
+	config.risks = [pars.wtr,het_risk,hom_mut_risk]
+	config.numCases = pars.numCases
+	config.numControls = pars.numControls
 	
 	reppop.evolve(
 		matingScheme=RandomMating(
@@ -77,16 +121,26 @@ def penetrance(pop,DPL=["rs4491689"],GRR=1.0,wtr=0.05,numCases=1000,numControls=
 		),
 		gen = 1
 	)
-	print config.SELECTED_CASE
+	
+	if logger:
+		logger.info("Number of Wild Type Cases: %d" %config.NUM_WT_CASES)
+		logger.info("Number of Mutant Controls: %d" %config.NUM_MUT_CONTROLS)
+	
 	config.SELECTED_CASE,config.SELECTED_CONTROL,config.DISCARDED_INDS,config.NUM_WT_CASES,config.NUM_MUT_CONTROLS = config.reset()
 	return reppop
 
 if __name__=='__main__':
-	pop = loadPopulation('MAF_0.05_2.pop')
-	print "Expanded population loaded!"
-	pop_file_name = "rep_1.pop"
+	import logging
+	logging.basicConfig(level=logging.DEBUG)
+	logger = logging.getLogger()
+
+	pars = simuOpt.Params(options)
+	if not pars.getParam():
+		sys.exit(1)
+	pars.pop = loadPopulation(pars.expandPop)
+	logger.info("Expanded population %s loaded!" %pars.expandPop)
 	
-	for a in range(2):
-		case_control_dataset = penetrance(pop)	
+	case_control_dataset = penetrance(pars,logger)	
 	
-	case_control_dataset.save(pop_file_name)
+	case_control_dataset.save(pars.sampledPop)
+	logger.info("Sampled population saved at %s" %pars.sampledPop)

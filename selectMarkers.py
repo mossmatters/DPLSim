@@ -268,7 +268,7 @@ HapMap3_pops = ['HapMap3_ASW', 'HapMap3_CEU', 'HapMap3_CHD', 'HapMap3_GIH',
 options = [
     {
     'longarg': 'HapMap_dir=',
-    'default': '.',
+    'default': 'HapMap',
     'useDefault': True,
     'label': 'HapMap data directory',
     'description': '''Directory to store HapMap data in simuPOP format. The 
@@ -279,19 +279,17 @@ options = [
      'validate': simuOpt.valueValidDir(),
     },
     {
-    'longarg': 'HapMap_pops=',
+    'name': 'HapMap_pops',
     'default' : HapMap3_pops,
-    'useDefault': False,
     'label' : 'Name of populations',
     'description': '''Which HapMap populations to use?''',
     'allowedTypes': [ListType, TupleType],
-    'chooseFrom': HapMap2_pops + HapMap3_pops,
+    'chooseFrom': HapMap3_pops,
     'validate': simuOpt.valueListOf(HapMap2_pops + HapMap3_pops),
     },
     {
-    'longarg': 'markerList=',
-    'default': '',
-    'useDefault': True,
+    'name': 'markerList',
+    'default': 'hh550v3_snptable.txt',
     'label': 'Marker list file',
     'description': '''A file with a list of marker names. If there are more than
         one fields at a line, the rest of them are ignored.''',
@@ -299,18 +297,17 @@ options = [
     'validate': simuOpt.valueOr(simuOpt.valueEqual(''), simuOpt.valueValidFile()),
     },
     {
-    'longarg': 'chroms=',
-    'default': [],
-    'useDefault': True,
+    'name': 'chroms',
+    'default': [2,5,10],
     'label': 'Chromosomes to use',
     'description': 'A list of chromosomes (1-22) to use.',
     'allowedTypes': [TupleType, ListType],
+    'chooseFrom':range(1,23),
     'validate': simuOpt.valueListOf(simuOpt.valueBetween(1, 22)),
     },
     {
-    'longarg': 'numMarkers=',
-    'default': [],
-    'useDefault': True,
+    'name': 'numMarkers',
+    'default': [2000,2000,2000],
     'label': 'Number of markers to use',
     'description': '''Number of markers to use for each chromosome. This
         parameter should be ignored if it is unspecified or is set to zero
@@ -320,9 +317,8 @@ options = [
     'validate': simuOpt.valueOr(simuOpt.valueGT(0), simuOpt.valueListOf(simuOpt.valueGE(0)))
     },
     {
-    'longarg': 'startPos=',
-    'default': [],
-    'useDefault': True,
+    'name': 'startPos',
+    'default': [25000000, 25000000, 40000000],
     'label': 'staring position (bp)',
     'description': '''Starting position of the markers on each chromosome.
         The beginning of the chromosomes will be assumed if this parameter
@@ -331,9 +327,8 @@ options = [
     'validate': simuOpt.valueOr(simuOpt.valueGE(0), simuOpt.valueListOf(simuOpt.valueGE(0)))
     },
     {
-    'longarg': 'endPos=',
+    'name': 'endPos',
     'default': [],
-    'useDefault': True,
     'label': 'Ending position (bp)',
     'description': '''Ending position of the markers on each chromosome.
         The end of the chromosomes will be assumed if this parameter is
@@ -370,7 +365,7 @@ options = [
     {
     'longarg': 'filename=',
     'label': 'Filename to save population',
-    'default': 'result.pop',
+    'default': 'init.pop',
     'useDefault': False,
     'description': '''Name of the population or an absolute path to
         a file. This parameter will be ignored if an empty string or None
