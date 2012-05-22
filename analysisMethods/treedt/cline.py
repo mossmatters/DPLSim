@@ -29,22 +29,23 @@ options = [
 	{'name': 'permutations',
      'default': 1000,
      'label': 'Number of Permutations',
-     'type': 'int',
+     'type': int,
      'description': 'Permutation tests in TreeDT'
     },
     {'name': 'correctLoc',
      'default': 0,
      'label': 'Correct location (for P and K only)',
-     'type': 'int',
+     'type': int,
      'description': 'Correct DPL for .'
     },
     {'name': 'fixedTrees',
     'default':0,
     'label': "Number of Fixed Subtrees (for k and K only)",
-    'type': 'int'        },
+    'type': int
+    },
     {'name': 'bashname',
     'default': 'rep_1_treedt.bash',
-    'type':'string',
+    'type':str,
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run PLINK."
     }
