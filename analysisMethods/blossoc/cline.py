@@ -64,11 +64,15 @@ options = [
     'type':'string',
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run Blossoc."
-    },
+    } ,
+    {'name':'dirname',
+    "default": "."
+    "description":"Path where bash script will be created"
+    }
 	]
 	
 def clineWriter(pars):
-	bashfile = open(pars.bashname,'w')
+	bashfile = open(os.path.join(pars.dirname,pars.bashname,'w')
 	bashfile.write("#/bin/bash\n")
 	if pars.unphased:
 		bashfile.write("blossoc %s %s -o %s\n" % (pars.positionsfile,pars.genotypefile,pars.outputfilename))

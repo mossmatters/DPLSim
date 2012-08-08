@@ -16,14 +16,14 @@ The user will need to specify:
 """
 
 import simuOpt, random, math,sys
-simuOpt.setOptions(quiet=True, alleleType='binary', optimized=True)
+simuOpt.setOptions(alleleType='binary', optimized=True)
 from simuPOP import *
 
 import config
 
 options = [
 	{'name':'DPL',
-	'default':["rs4491689"],
+	'default':"rs4491689",
 	'type':'strings',
 	'label':"Disease Locus ID"
 	},

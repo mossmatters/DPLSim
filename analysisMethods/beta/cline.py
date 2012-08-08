@@ -58,11 +58,15 @@ options = [
     'default':True,
     'type':BooleanType,
     "description":"""If true, will delete the input files and most of the outputfiles upon completion. Saves only the Bayes factors."""
+    },
+    {'name':'dirname',
+    "default": "."
+    "description":"Path where bash script will be created"
     }
 	]
 	
 def clineWriter(pars):
-	bashfile = open(pars.bashname,'w')
+	bashfile = open(os.path.join(pars.dirname,pars.bashname,'w')
 	bashfile.write("#/bin/bash\n")
 
 	bashfile.write("Rscript %s %s %s %s %s %s >%s\n" %(pars.betaLoc,pars.haplofile,pars.posfile,pars.statusfile,pars.resultsfilename,pars.rootpath,pars.logfile))

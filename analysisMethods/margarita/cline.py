@@ -59,11 +59,15 @@ options = [
     'default':True,
     'type':BooleanType,
     "description":"""If true, will delete the input file and most of the outputfile upon completion. Saves only the ARG scores."""
+    } ,
+    {'name':'dirname',
+    "default": "."
+    "description":"Path where bash script will be created"
     }
 	]
 	
 def clineWriter(pars):
-	bashfile = open(pars.bashname,'w')
+	bashfile = open(os.path.join(pars.dirname,pars.bashname,'w')
 	bashfile.write("#/bin/bash\n")
 	if pars.smartPerm:
 		bashfile.write("java -Xmx%d -jar %s %s %d %d --smart %d\n" % (pars.memory,pars.margaritaLoc,pars.inputfile,pars.numArgs,pars.permutations,pars.numSmart))

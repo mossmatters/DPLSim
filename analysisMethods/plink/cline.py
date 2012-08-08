@@ -41,10 +41,15 @@ options = [
     'label': "Name for the bash script.",
 	'description': "Name of a file to save the bash script to run PLINK.",
 	'validate': simuOpt.valueNotEqual('')
+ ,
+    {'name':'dirname',
+    "default": "."
+    "description":"Path where bash script will be created"
     }
 	]
 	
 def clineWriter(pars):
+	bashfile = open(os.path.join(pars.dirname,pars.bashname,'w')
 	if pars.assoc:
 		a = "--assoc"
 	else:
@@ -53,7 +58,6 @@ def clineWriter(pars):
 		n = "--noweb"
 	else:
 		n = ""
-	bashfile = open(pars.bashname,'w')
 	bashfile.write("#/bin/bash\n")
 	bashfile.write("plink --file %s --out %s %s %s\n" % (pars.filestem,pars.outfilestem,a,n))
 	bashfile.close()

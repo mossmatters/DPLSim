@@ -6,11 +6,11 @@ import simuOpt
 from DPLSim.analysisMethods import my_import
 
 options = [
-    {'name': 'clines',
+    {'name': 'formatters',
      'default': ['PLINK'],
      'chooseFrom' : [x.split('.')[2].upper() for x in DPLSim.analysisMethods.getAnalysisMethods()],
      'label': 'Formatters\nHold Control to select multiple.',
-     'description': 'Names of analysis methods for which input files will be created.'
+     'description': 'Names of analysis methods for which bash scripts will be created.'
     },
     {'name': 'inputfile',
      'default': 'rep_1.pop',
@@ -23,7 +23,7 @@ options = [
     ]
 
 def cliner(pars,logger=None):
-	my_methods = pars.clines
+	my_methods = pars.formatters
 	infile = pars.inputfile
 	inputfileroot = infile.split(".")[0]
 	
@@ -40,19 +40,18 @@ def cliner(pars,logger=None):
 					if a.hasClineFunction():
 						cline_module = a.getClineFunction()
 						cline_pars = simuOpt.Params(cline_module.options)
-						if not cline_pars.getParam():
+						if not cline_pars.getParam(checkArgs=False):
 							sys.exit(1)
 						cline_module.clineWriter(cline_pars)
 						filenames.append(cline_pars.bashname)
 						if logger:
-							logger.info("Bash Script to type %s done!" % a.name)
+							logger.info("Bash Script to type %s written!" % (a.name))
 					else:
 						logger.info("Command Line for method %s not supported!" % m)
 	return filenames	
 
 short_desc = """
-Main formatting function to parse simuPOP population file and output the files necessary
-To run one or more analysis methods.
+Main function to setup the command line executable scripts for each program.
 """
 
 

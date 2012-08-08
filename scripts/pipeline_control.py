@@ -37,12 +37,12 @@ pipeline_options = [
 	{'name':'pipeline_mode',
 	'type':("chooseOneOf",["single","replicates"]),
 	'default':"single",
-	'label':"Create multple replicates at MAF or GRR?"
+	'label':"Run for one parameter setting or replicates?"
 	}
 	]
 
 
-def downloadData(logger=None,args=None):
+def downloadData(logger=None,**kwargs):
 	'''
 	Download and create populations from the third phase of the HapMap3 data.
 	By default it grabs all available populations.
@@ -63,11 +63,12 @@ def downloadData(logger=None,args=None):
 		'and saves them in simuPOP format. It also downloads the fine-scale\n'
 		'recombination map and saves the genetic distance of each marker in\n'
 		'a dictionary (geneticMap) in the population\'s local namespace."""
-	pars = Params(options,short_desc)
-	if args is not None:
-		pars.getParam(args=args)
+	
+	if len(kwargs) > 0:
+		pars = Params(options,short_desc,kwargs)
 	else:
-		if not pars.guiGetParam(ncol=2):
+		pars = Params(options,short_desc)
+		if not pars.guiGetParam(nCol=2):
 			sys.exit(1)
 	
 	if not pars.skip:
@@ -83,7 +84,7 @@ def downloadData(logger=None,args=None):
 							continue
 				except:
 					print "do or do not, there is no try"# continue to load file
-				pass
+					pass
 				pop = loadHapMapPop(chrom, sample)
 				if logger:
 					logger.info("Save population to %s." % popFile)
@@ -91,7 +92,7 @@ def downloadData(logger=None,args=None):
 
 	return pars
 
-def getInitPop(logger=None,args=None):
+def getInitPop(logger=None,**kwargs):
 	'''
 	Get markers from a specified range in all HapMap populations, return this initialized population.
 	
@@ -119,12 +120,13 @@ def getInitPop(logger=None,args=None):
 	'''
 	options = selectMarkers.options
 	short_desc="""This script chooses specified markers from one or more HapMap\npopulations and saves them in simuPOP format.\n""",
-	pars = Params(options)
 	
-	if args is not None:
-		pars.getParam(args=args)
+	
+	if len(kwargs) > 0:
+		pars = Params(options,short_desc,**kwargs)
 	else:
-		if not pars.guiGetParam(ncol=2):
+		pars = Params(options,short_desc)
+		if not pars.guiGetParam(nCol=2):
 			sys.exit(1)
 	
 	if os.path.isfile(pars.filename):
@@ -161,7 +163,7 @@ def getInitPop(logger=None,args=None):
 	selectMarkers.saveMarkerList(pop, pars.filename + '.lst',logger=logger)
 	return pars
 
-def getExpandPop(logger=None,args=None):
+def getExpandPop(logger=None,**kwargs):
 	"""
 	Wrapper for simuGWAS.py
 	"""
@@ -169,10 +171,11 @@ def getExpandPop(logger=None,args=None):
 	short_desc = '''This program evolves a subset of the HapMap dataset
 	forward in time in order to simulate case control samples with realistic
 	allele frequency and linkage disequilibrium structure.'''
-	pars = Params(options,short_desc)
-	if args is not None:
-		pars.getParam(args=args)
+	
+	if len(kwargs) > 0:
+		pars = Params(options,short_desc,**kwargs)
 	else:
+		pars = Params(options,short_desc)
 		if not pars.guiGetParam():
 			sys.exit(1)
 	if os.path.isfile(pars.filename):
@@ -193,7 +196,7 @@ def getExpandPop(logger=None,args=None):
 	return pars
 	
 	
-def getCaseControl(logger=None,args=None):
+def getCaseControl(logger=None,**kwargs):
 	""" 
 	This script takes an expanded population from simupop and selects cases and controls
 	based on a disease model set in _selectInds. Individuals are chosen based on a rejection-sampling
@@ -215,36 +218,37 @@ def getCaseControl(logger=None,args=None):
 	via the "rejection sampling" method of Peng and Amos. This single gene model will
 	determine case/control status based upon one marker, a relative risk, and wild type risk.
 	"""
-	pars = Params(options,short_desc)
-	if args is not None:
-		pars.getParam(args=args)
-	else:
+	if kwargs['gui']:
+		pars = Params(options,short_desc)
 		if not pars.guiGetParam():
 			sys.exit(1)	
-	return pars
-
-def get_replicates(logger=None,args=None):
-	"""Set up replicate datasets."""
-	dirpaths = replicator.dir_setup(logger)		
-
-def get_formatters(logger=None,args=None):
-	pars = Params(format.options,short_desc="Choose Progs to format input files for")
-	if args is not None:
-		pars.getParam(args=args)
-	else:
-		if not format_pars.guiGetParam():
-			sys.exit(1)
-	return format.format(pars,logger)
-
-def get_cline(logger=None,args=None):
-	pars = Params(cline_writer.options,short_desc="Choose Progs to create command line bash script")
-	if args is not None:
-		pars.getParam(args=args)
+		return pars	
 
 	else:
-		if not cline_pars.guiGetParam():
+		pars = Params(options,short_desc,**kwargs)
+		return pars
+
+def get_formatters(logger=None,**kwargs):
+	
+	if kwargs['gui']:
+		pars = Params(format.options,doc="Choose Progs to format input files for")
+		if not pars.guiGetParam():
 			sys.exit(1)
-	return cline_writer.cliner(pars,logger)
+		return format.format(pars,logger)
+	else:
+		pars = Params(format.options,doc="Choose Progs to format input files for",**kwargs)
+		return format.format(pars,logger)
+
+def get_cline(logger=None,**kwargs):
+	if kwargs['gui']:
+		pars = Params(format.options,doc="Choose Progs to create bash scripts files for")
+		if not pars.guiGetParam():
+			sys.exit(1)	
+		return cline_writer.cliner(pars,logger)
+
+	else:
+		pars = Params(format.options,doc="Choose Progs to create bash scripts for",**kwargs)
+		return cline_writer.cliner(pars,logger)
 
 def single_mode(pipeline_pars,logger=None):
 	if pipeline_pars.download:
@@ -277,7 +281,44 @@ def single_mode(pipeline_pars,logger=None):
 	
 	if pipeline_pars.cline:
 		cline_filenames = get_cline(logger)
+
+def replicate_mode(pipeline_pars,logger=None):
+	additional_args = pipeline_pars.asDict()
+	if pipeline_pars.gui == 'batch':
+		additional_args['gui'] = False
+	else:
+		additional_args['gui'] = True
+	rep_opt = Params(replicator.replicator_options,replicator.short_desc,replicator.__doc__)
+	if not rep_opt.getParam(checkArgs=False):
+		sys.exit(1)
+	additional_args['formatters']=rep_opt.formatters
+
+	if rep_opt.createDirs:
+		rep_opt.addOption("dirpaths", replicator.dir_setup(rep_opt,logger),label="List of directories")
+		logger.info("Created %d directories" % len(rep_opt.dirpaths))
 		
+	if pipeline_pars.download:
+		download_pars=downloadData(logger)
+	
+	if pipeline_pars.init:
+		init_pop_pars =getInitPop(logger)
+	
+	#Need to work on this for cases where multiple MAF are used
+	if pipeline_pars.expand:
+		expand_pop_pars = getExpandPop(logger)
+	
+	if pipeline_pars.penetrance:
+		replicator.rep_case_control(rep_opt,logger) 
+
+	if pipeline_pars.format:
+		format_filenames = get_formatters(logger,**additional_args)
+	
+	if pipeline_pars.cline:
+		cline_filenames = replicator.rep_bash(dirpaths,logger,**additional_args)
+
+	
+	
+	
 short_desc = """
 This scripts sets up a pipeline for analysis of a disease locus using
 multiple analysis methods. Choose below the steps of the pipeline you
@@ -289,9 +330,11 @@ if __name__ == '__main__':
 	logger = logging.getLogger()
 	
 	pipeline_pars = Params(pipeline_options,short_desc)
-	if not pipeline_pars.getParam():
+	if not pipeline_pars.getParam(checkArgs=False):
 		sys.exit(1)
 	if pipeline_pars.pipeline_mode=="single":
 		single_mode(pipeline_pars,logger)
 	elif pipeline_pars.pipeline_mode == "replicates":
-		logger.info("replicate mode coming soon!")
+		replicate_mode(pipeline_pars,logger)
+		
+	
